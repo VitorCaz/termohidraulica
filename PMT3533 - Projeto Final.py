@@ -1,6 +1,3 @@
-"""
-Bibliotecas importadas
-"""
 import numpy as np
 import iapws as ip
 import matplotlib.pyplot as plt
@@ -19,9 +16,9 @@ if Caso == 2:
         fator_potencia = 0.0389 
         fator_vazao = 0.1353 
             
-"""
-Dados Fornecidos + Propriedades gerais
-"""
+
+##Dados
+
 T_entrada = 30 + 273 #em Kelvin
 P_reator = 5000000*fator_potencia #em W
 Vazao_vol_EC = 22.8*fator_vazao #m³/h
@@ -35,16 +32,15 @@ H_placa = 600 #mm
 L_canal = 67.1 #mm
 E_combustivel = 0.76 #mm
 E_canal_interno = 2.89 #mm
-E_canal_externo = 4.72 #mm
 E_revestimento = 0.38 #mm
 k_revestimento = 180 #W/mK
 P_entrada = 0.160 #MPa
 P_saida = 0.150 #P_entrada-Perda de carga de 10kPa
 
 
-"""
-Cálculo Placas
-"""
+
+##Cálculo Placas
+
 N_total_placa = (N_EC*N_placas_combustiveis) + (N_placas_controles*N_controles)
 A_total_troca = N_total_placa*H_placa*(L_placa*10**-6)*2
 A_troca_1_placa = A_total_troca/N_total_placa
@@ -57,9 +53,9 @@ q_3linha = P_reator/V_total_combustivel
 
 
 
-"""
-Funções das Propriedades da Água
-"""
+
+##Propriedades da Água
+
 def mi1_H2O(T_entrada, P_reator):
     H2O = ip.IAPWS97(T = T_entrada, P = P_reator)
     G = H2O.mu
@@ -105,9 +101,9 @@ def q_1linha(Y):
 def kelvin_to_celsius(temps):
     return [temp - 273.15 for temp in temps]
 
-"""
-Criando a malha
-"""
+
+##Criando a malha
+
 X_pontos = int(input('Insira o Tamanho da Malha: '))
 Ponto_inicial = - (H_placa/2) + (H_placa/X_pontos)/2
 Ponto_final = Ponto_inicial + (X_pontos - 1)*(H_placa/X_pontos)
@@ -131,9 +127,9 @@ print()
 
 
 
-"""
-Cálculo do fluxo de calor por unidade de área
-"""
+
+##Cálculo do fluxo de calor por unidade de área
+
 q_2linha_especifico = np.array([q_1linha(Pontos_Y[i]) for i in range(X_pontos)])
 
 Lista_q_2linha = []
@@ -158,9 +154,9 @@ print()
 
 
 
-"""
-Obtenção das curvas de Temperatura (T4, T3, T2, T1)
-"""
+
+##Obtenção dos perfis de temperaturas (T4, T3, T2, T1)
+
 Vazao_massica_canal = Vazao_vol_EC*rho1_H2O(T_entrada, P_entrada)/(3600*(N_placas_combustiveis - 1))
 Gradiente_de_pressao = np.linspace(P_entrada, P_saida, X_pontos)
 A_unidade_de_controle = A_troca_1_placa/X_pontos
@@ -262,9 +258,9 @@ for i in range(len(T1)):
         print('    ', T1C[i], '°C')
 
 
-"""
-Construção do Gráfico
-"""
+
+##Gráfico dos perfis de temperaturas
+
 plt.plot(Pontos_Y, T1C, "--o", label="T1")
 plt.plot(Pontos_Y, T2C, "--o", label="T2")
 plt.plot(Pontos_Y, T3C, "--o", label="T3")
@@ -276,6 +272,8 @@ plt.title('Distribuição de Temperaturas para ' + str(X_pontos) + ' pontos')
 plt.xlabel('Posição X (mm)')
 plt.ylabel('Temperatura (°C)')
 plt.show()
+
+##Gráfico do coeficiente de troca de calor por convecção
 
 plt.plot(Pontos_Y, H, "--o", label="h")
 plt.legend()
